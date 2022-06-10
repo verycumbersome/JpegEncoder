@@ -14,7 +14,8 @@ def cosine(n, k):
 def DCT(x):
     """Find all composite cosine frequencies via matrix multiplication"""
     C = np.fromfunction(lambda i, j: cosine(i, j), (K, N), dtype=float)
-    out = np.matmul(x, C.T)
+    out = np.matmul(C, x)
+    print(out.astype(int))
     return out
 
 
