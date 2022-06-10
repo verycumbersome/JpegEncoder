@@ -2,9 +2,8 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 N = 100  # Length of signal
-K = 32  # Length of cosine matrix
+K = 32  # Length of vosine matrix
 
 
 def DCT(x):
@@ -21,7 +20,7 @@ def DCT(x):
     return out
 
 
-if __name__=="__main__":
+def main():
     # Pure cos signal for testing
     period = 4
     x_1 = np.cos(np.linspace(-np.pi, np.pi, N) * period / 2)
@@ -48,3 +47,7 @@ if __name__=="__main__":
     axs[1, 0].plot(fig2_domain, out1)
     axs[1, 1].plot(fig2_domain, out2)
     plt.show()
+
+
+if __name__=="__main__":
+    main()
