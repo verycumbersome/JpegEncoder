@@ -15,12 +15,27 @@ def rgb_to_ycbcr(img):
     img[:,:,2] = 128 - 37.945 * R - 74.494 * G + 112.439 * B
     img[:,:,1] = 128 + 112.439 * R - 94.154 * G - 18.285 * B
 
-    img = cv2.cvtColor(img, cv2.COLOR_YCrCb2RGB)
-    PIL_image = Image.fromarray(img).convert("YCbCr")
-    PIL_image.show()
-
-    # print(img)
+    return img
 
 
-img = Image.open("images/wood.png")
-rgb_to_ycbcr(img)
+def downsample(img, scale=4):
+    cb = img[::scale,::scale,1]
+    cr = img[::scale,::scale,2]
+
+    y = img[:,:,0]
+    cb = np.kron(cb, np.ones((scale, scale)))[:img.shape[0],:img.shape[1]]
+    cr = np.kron(cr, np.ones((scale, scale)))[:img.shape[0],:img.shape[1]]
+
+    img = np.stack([y, cb, cr], axis=2).astype(np.uint8)
+
+    return img
+
+
+img = Image.open("images/cat.png")
+img = rgb_to_ycbcr(img)
+img = downsample(img)
+
+
+img = cv2.cvtColor(img, cv2.COLOR_YCrCb2RGB)
+PIL_image = Image.fromarray(img).convert("YCbCr")
+PIL_image.show()
