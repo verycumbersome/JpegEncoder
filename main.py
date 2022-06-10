@@ -6,17 +6,15 @@ N = 100  # Length of signal
 K = 32  # Length of vosine matrix
 
 
-def DCT(x):
-    """
-    Function: Cos((pi*k/2N) * (2N+1)); Sum for n=0 to N
-    """
-    C = np.fromfunction(
-        lambda i, j: np.cos((2 * j + 1) * (i * np.pi / (2 * N))),
-        (K, N),
-        dtype=float
-    )
-    out = np.matmul(x, C.T)
+def cosine(n, k):
+    """Function: Cos((pi*k/2N) * (2N+1)); Sum for n=0 to N"""
+    return np.cos((2 * k + 1) * (n * np.pi / (2 * N)))
 
+
+def DCT(x):
+    """Find all composite cosine frequencies via matrix multiplication"""
+    C = np.fromfunction(lambda i, j: cosine(i, j), (K, N), dtype=float)
+    out = np.matmul(x, C.T)
     return out
 
 
