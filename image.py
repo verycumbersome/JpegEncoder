@@ -37,39 +37,60 @@ def split_blocks(img, size=8):
     y_overflow = img.shape[1] % size
     img = img[:-x_overflow,:-y_overflow,:]
 
-    y = img[:,:,0]
-    print(y[0:8,0:8,])
+    # Access an 8x8 block from the image: 
+    # x, y = the indices for each 8x8 block
+    # ch = channel from index 0 to 2 for y, cb, cr
+    index_block = lambda x, y, ch: img[x*size:(x+1)*size, y*size:(y+1)*size,ch]
 
-    y = np.ravel(y)
-    y = np.split(y, y.shape[0] // size)
-    print(y)
-
-    # print()
-    # print()
-    # print()
-    # print()
-    # print()
-    # print()
-    # print()
-    # print()
-    # y = y.reshape(8, 8, -1, order="F")
-    # print(y.shape)
-    # print(y[0:8,0:8,0])
-    # cb = img[:,:,1]
-    # cr = img[:,:,2]
-
-    # y = [x.reshape(8, 8) for x in np.split(y, y.shape[0] // size**2)]
-    # print(y[0])
-    # print(y.shape[0])
-
-    # y = np.split(y.ravel(), img.shape[])
-    # print(len(y))
-    # for i in y:
-        # print(i.shape)
+    block = index_block(40, 10, 0)
+    DCT(block)
+    # for x in range(len(img) // size):
+    # for y in range(len(img) // size):
+    # block = index_block(x, y, 0)
 
 
-# def DCT(block):
-    # block -= 128
+def cosine(i, j, N=8):
+    """Row-wise function for populating DCT matrix"""
+    if i == 0:
+        out = np.ones(N) / np.sqrt(N)
+    else:
+        out = np.sqrt(2/N) * np.cos(((2*j+1) * i * np.pi) / (2 * N))
+
+    return out
+
+
+def DCT(block, N=8):
+    T = np.array([cosine(x, np.arange(N)) for x in range(8)])
+
+    block = np.array([
+        [154, 192, 254, 239, 180, 128, 123, 110],
+        [123, 180, 198, 180, 154, 136, 105, 136],
+        [123, 136, 154, 136, 136, 123, 110, 123],
+        [123, 154, 154, 180, 167, 136, 149, 123],
+        [123, 154, 180, 180, 166, 154, 136, 123],
+        [123, 154, 154, 166, 149, 180, 136, 136],
+        [123, 136, 123, 123, 136, 198, 180, 154],
+        [136, 110, 123, 123, 136, 154, 166, 136]
+    ]).T
+
+    block -= 128
+
+    D = np.matmul(np.matmul(T, block), T.T)
+    print(D)
+
+    Q = np.array([
+        [16, 11, 10, 16, 24, 40, 51, 61],
+        [12, 12, 14, 19, 26, 58, 60, 55],
+        [14, 13, 16, 24, 40, 57, 69, 56],
+        [14, 17, 22, 29, 51, 87, 80, 62],
+        [18, 22, 37, 56, 68,109,103, 77],
+        [24, 35, 55, 64, 81,104,113, 92],
+        [49, 64, 78, 87,103,121,120,101],
+        [72, 92, 95, 98,112,100,103, 99]
+    ])
+
+    print(np.rint(D / Q))
+
 
 
 img = Image.open("images/wood.png")
